@@ -6,13 +6,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class ProductDetailsPage {
-
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    private final By title = By.cssSelector("h1#itemTitle");
-    private final By price = By.cssSelector("div#prcIsum, div#prcIsum_bidPrice, span#prcIsum");
-    private final By addToCart = By.id("isCartBtn_btn");
+    private final By title = By.xpath("//h1[contains(@class,'x-item-title__mainTitle')]//span");
+    private final By price = By.xpath("//div[@data-testid='x-price-primary']//span");
+    private final By seeAllDetails = By.xpath("//a[contains(., 'See all details')]");
 
     public ProductDetailsPage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
@@ -20,14 +19,14 @@ public class ProductDetailsPage {
     }
 
     public String getItemName() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(title)).getText().replace("Details about  \u00a0", "").trim();
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(title)).getText().trim();
     }
 
     public String getItemPrice() {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(price)).getText().trim();
     }
 
-    public void clickAddToCart() {
-        wait.until(ExpectedConditions.elementToBeClickable(addToCart)).click();
+    public void clickSeeAllDetails() {
+        wait.until(ExpectedConditions.elementToBeClickable(seeAllDetails)).click();
     }
 }

@@ -6,7 +6,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class CheckoutPage {
-
     private final WebDriver driver;
     private final WebDriverWait wait;
 
@@ -18,7 +17,7 @@ public class CheckoutPage {
         this.wait = wait;
     }
 
-    public void enterGuestEmail(String email) {
+    public void enterEmail(String email) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(emailField)).sendKeys(email);
     }
 
@@ -26,7 +25,7 @@ public class CheckoutPage {
         wait.until(ExpectedConditions.elementToBeClickable(continueBtn)).click();
     }
 
-    public boolean isLoginPageDisplayed() {
+    public boolean isLoginPage() {
         return wait.until(d -> d.getCurrentUrl().contains("signin") || d.getCurrentUrl().contains("login"));
     }
 }

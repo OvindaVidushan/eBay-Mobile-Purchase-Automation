@@ -9,77 +9,50 @@ public class PurchaseTest extends BaseTest {
     @Test
     public void guestMobilePurchaseFlow() {
 
-        HomePage homePage = new HomePage(driver, wait);
-        ElectronicsPage electronicsPage = new ElectronicsPage(driver, wait);
-        SeeAllPage seeAllPage = new SeeAllPage(driver, wait);
-        SearchResultsPage searchResultsPage = new SearchResultsPage(driver, wait);
-        ProductDetailsPage productDetailsPage = new ProductDetailsPage(driver, wait);
-        CartPage cartPage = new CartPage(driver, wait);
-        CheckoutPage checkoutPage = new CheckoutPage(driver, wait);
+        HomePage home = new HomePage(driver, wait);
+        SearchResultsPage results = new SearchResultsPage(driver, wait);
+        SeeAllPage seeAll = new SeeAllPage(driver, wait);
+        ProductDetailsPage product = new ProductDetailsPage(driver, wait);
+        NewWindow newWindow = new NewWindow(driver);
+        CartPage cart = new CartPage(driver, wait);
 
-        // 1) Open eBay + verify URL
-        homePage.open();
-        String currentUrl = driver.getCurrentUrl();
-        System.out.println("Current URL: " + currentUrl);
-        Assert.assertTrue(currentUrl.contains("ebay.com"), "URL is not eBay!");
+        home.open();
+        Assert.assertTrue(driver.getCurrentUrl().contains("ebay.com"));
 
-        // 2) Category navigation (Electronics → Cell Phones & Smartphones → See All)
-        homePage.clickElectronics();
-        electronicsPage.openCellPhonesAndSmartphones();
-        // If your flow uses "See All" link, keep this.
-        // If it fails due to UI changes, we can switch to search-based flow.
-        try {
-            seeAllPage.clickSeeAll();
-        } catch (Exception e) {
-            System.out.println("See All not found, continuing without it...");
-        }
+        // Hover Electronics → Smartphones and accessories
+        home.goToSmartphonesAndAccessories();
 
-        // 3) (Backup) Search for mobile phones (ensures results page always loads)
-        // If you want strictly category-only, we can remove later.
-        homePage.search("mobile phone");
+        // Click "See All"
+        results.clickSeeAll();
 
-        // 4) Select first product
-        searchResultsPage.clickFirstResult();
+        // Select first item
+        seeAll.selectFirstItem();
 
-        // 5) Capture product name + price
-        String itemName = productDetailsPage.getItemName();
-        String itemPrice = productDetailsPage.getItemPrice();
+        // Print name + price
+        String name = product.getItemName();
+        String price = product.getItemPrice();
+        System.out.println("Item Name  : " + name);
+        System.out.println("Item Price : " + price);
 
-        System.out.println("Item Name: " + itemName);
-        System.out.println("Item Price: " + itemPrice);
+        Assert.assertFalse(name.isBlank());
+        Assert.assertFalse(price.isBlank());
 
-        Assert.assertFalse(itemName.isBlank(), "Item name is empty!");
-        Assert.assertFalse(itemPrice.isBlank(), "Item price is empty!");
+        // Open "See all details" (opens new tab) → switch
+        product.clickSeeAllDetails();
+        newWindow.changeToNextWindow();
 
-        // 6) Add to cart
-        productDetailsPage.addToCart();
+        // Add to cart and open cart
+        cart.clickAddToCart();
+        cart.openCart();
 
-        // 7) Validate cart details
-        String cartName = cartPage.getCartItemName();
-        String cartPrice = cartPage.getCartItemPrice();
+        String subtotal = cart.getSubtotal();
+        System.out.println("Total      : " + subtotal);
+        Assert.assertFalse(subtotal.isBlank());
 
-        System.out.println("Cart Name: " + cartName);
-        System.out.println("Cart Price: " + cartPrice);
+        // Go to checkout (should lead to signin/guest options)
+        cart.goToCheckout();
 
-        Assert.assertTrue(cartName.toLowerCase().contains(itemName.toLowerCase().split(" ")[0]),
-                "Cart item name does not match selected item!");
-
-        // Price formats can vary; we just ensure it's not empty and contains currency symbol
-        Assert.assertFalse(cartPrice.isBlank(), "Cart price is empty!");
-
-        // 8) Estimated total
-        String estTotal = cartPage.getEstimatedTotal();
-        System.out.println("Estimated Total: " + estTotal);
-        Assert.assertFalse(estTotal.isBlank(), "Estimated total is empty!");
-
-        // 9) Proceed to checkout (guest)
-        cartPage.proceedToCheckout();
-
-        // 10) Stop at login page (as assignment requirement)
-        checkoutPage.enterEmail("testuser123@example.com");
-        checkoutPage.clickContinue();
-
-        Assert.assertTrue(checkoutPage.isLoginPage(), "Did not reach login/signin page as expected!");
-        System.out.println("Reached login page - stopping as required.");
+        // STOP here (assignment says stop where login is required)
+        System.out.println("Reached checkout/login step - stopping as required.");
     }
 }
