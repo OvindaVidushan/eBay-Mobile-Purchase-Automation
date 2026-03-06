@@ -6,28 +6,32 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
 public class CartPage {
-
     private final WebDriver driver;
     private final WebDriverWait wait;
 
-    private final By cartItemTitle = By.cssSelector("div[data-test-id='cart-item'] a[data-test-id='cart-item-link'], a[data-test-id='cart-item-title']");
-    private final By cartItemPrice = By.cssSelector("[data-test-id='cart-item-price'], span[itemprop='price']");
-    private final By proceedToCheckout = By.cssSelector("button[data-test-id='cta-top'], a[data-test-id='cta-top']");
+    private final By addToCart = By.xpath("//a[@id='atcBtn_btn_1']");
+    private final By cartIcon = By.cssSelector("a[href='https://cart.ebay.com']");
+    private final By subtotal = By.cssSelector("div[data-test-id='SUBTOTAL'] span.text-display-span");
+    private final By goToCheckout = By.xpath("//a[contains(@href, '/checkout')] | //button[contains(text(), 'Go to checkout')]");
 
     public CartPage(WebDriver driver, WebDriverWait wait) {
         this.driver = driver;
         this.wait = wait;
     }
 
-    public String getCartItemName() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(cartItemTitle)).getText().trim();
+    public void clickAddToCart() {
+        wait.until(ExpectedConditions.elementToBeClickable(addToCart)).click();
     }
 
-    public String getCartItemPrice() {
-        return wait.until(ExpectedConditions.visibilityOfElementLocated(cartItemPrice)).getText().trim();
+    public void openCart() {
+        wait.until(ExpectedConditions.elementToBeClickable(cartIcon)).click();
     }
 
-    public void clickProceedToCheckout() {
-        wait.until(ExpectedConditions.elementToBeClickable(proceedToCheckout)).click();
+    public String getSubtotal() {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(subtotal)).getText().trim();
+    }
+
+    public void goToCheckout() {
+        wait.until(ExpectedConditions.elementToBeClickable(goToCheckout)).click();
     }
 }
